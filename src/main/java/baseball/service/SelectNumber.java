@@ -1,20 +1,16 @@
 package baseball.service;
 
-import baseball.comment;
-import baseball.endGame;
-import baseball.gameResult;
-import baseball.randomNumber;
+import baseball.domain.endGame;
 import camp.nextstep.edu.missionutils.Randoms;
 import camp.nextstep.edu.missionutils.Console;
-
 import java.util.regex.Pattern;
 
 public class SelectNumber {
-    private boolean isCorrect;
+
     private int min;
     private int max;
     private int size;
-    private final String regex = "^[1-9]{3}$";
+    private String regex = "^[1-9]{3}$";
 
     public SelectNumber(int min, int max, int size) {
         this.min = min;
@@ -22,57 +18,61 @@ public class SelectNumber {
         this.size = size;
     }
 
+    /**
+     * list -> String
+     */
     public String pickRandomNumber() {
         StringBuilder sb = new StringBuilder();
-        sb.append(Randoms.pickUniqueNumbersInRange(min, max, size));
-        return sb.toString();
+        for (int i = 0; i < this.size; i++) {
+            int randomNumber = Randoms.pickNumberInRange(min, max);
+            sb.append(randomNumber);
+        }
+        String result = sb.toString();
+        if (isValidNumber(result) == false) {
+            return null;
+        }
+        return result;
     }
 
+    /**
+     * 예외 발생 시 null 반환
+     */
     public String chooseNumber () {
         String number = Console.readLine();
-        if (!Pattern.matches(regex, number)) {
+        if (isValidNumber(number) == false) {
             throw new IllegalArgumentException();
         }
         return number;
     }
 
-    public String compareNumber(String compareNumber, String chooseNumber) {
-        if (compareNumber.length() != chooseNumber.length()) {
-            throw new IllegalArgumentException("비교하는 숫자의 길이가 맞지 않아용");
-        }
-        int ball = 0;
-        int strike = 0;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < compareNumber.length(); i++) {
-            char com = compareNumber.charAt(i);
-            char ch = chooseNumber.charAt(i);
+    private boolean isValidNumber(String number) {
 
-            if (ch == com) {
-                strike++;
-            } else if (compareNumber.contains(String.valueOf(ch))) {
-                ball++;
+        if (Pattern.matches(regex, number) == false || isDuplicateNumber(number) == false) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 문자열 비교 로직
+     */
+    private boolean isDuplicateNumber(String number) {
+
+        for (char c : number.toCharArray()) {
+            int count = 0;
+            for (char d : number.toCharArray()) {
+                if (c == d) {
+                    count++;
+                }
+            }
+            if (count > 1) {
+                return false;
             }
         }
-
-        if (ball > 0) {
-            sb.append(ball + gameResult.ball.getMessage());
-        }
-        if (strike > 0) {
-            if (ball > 0) sb.append(" ");
-            sb.append(strike + gameResult.strike.getMessage());
-        }
-        if (ball == 0 && strike == 0) {
-            sb.append(gameResult.nothing.getMessage());
-        }
-        isCorrect = (strike == randomNumber.size.getNumber());
-        return sb.toString();
+        return true;
     }
 
-    public boolean isCorrect() {
-        return isCorrect;
-    }
-
-    public boolean maintainGame() {
+    public boolean isEndGame() {
         String number = Console.readLine();
         if (number.charAt(0) == endGame.maintain.getNumber()) {
             return true;
@@ -84,4 +84,5 @@ public class SelectNumber {
             throw new IllegalArgumentException();
         }
     }
+
 }

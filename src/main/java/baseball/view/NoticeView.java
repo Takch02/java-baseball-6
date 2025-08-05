@@ -1,7 +1,7 @@
 package baseball.view;
 
-import baseball.comment;
-import baseball.gameResult;
+import baseball.domain.comment;
+import baseball.domain.gameResult;
 
 public class NoticeView {
     public void startComment() {
@@ -18,7 +18,16 @@ public class NoticeView {
     }
 
     public void computerNumberComment(String number) {
-        System.out.println(comment.computerNumber.getMessage() + " : " + number);
+        if (number == null) {
+            System.out.println("컴퓨터가 선택한 숫자가 null 값입니다");
+        }
+        else {
+            System.out.println(comment.computerNumber.getMessage() + " : " + number);
+        }
+    }
+
+    public void errorComment() {
+        System.out.println(comment.errorNumber.getMessage());
     }
     public void resultComment(String result) {
         System.out.println(result);
