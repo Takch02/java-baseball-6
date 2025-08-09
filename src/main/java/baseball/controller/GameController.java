@@ -14,18 +14,14 @@ public class GameController {
 
     public void startGame() {
         view.startComment();  // 시작 멘트
-        while(!isEnd) {
-            try {
-                startOneGame();
-                if (input.isEndGame() != true) {
-                    isEnd = true;
-                }
-            } catch (IllegalArgumentException e) {
+        while(isEnd == false) {
+            startOneGame();
+            if (input.isEndGame() != true) {
+                isEnd = true;
                 view.errorComment();
                 isEnd = true;  // 숫자 형식이 잘못되면 바로 종료
             }
         }
-
     }
 
     private void startOneGame() {
@@ -33,23 +29,19 @@ public class GameController {
         String computerNumber = input.pickRandomNumber();
         view.computerNumberComment(computerNumber);
         while (true) {
-            try {
-                view.chooseComment();
-                String inputNumber = input.chooseNumber();
-                if (compareNumber.compare(computerNumber, inputNumber) == false) {
-                    view.errorComment();
-                    continue;
-                }
-                String result = compareNumber.compareResult();
-                view.resultComment(result);
-
-                if (compareNumber.getIsCorrect() == true) {
-                    compareNumber.initBallAndStrike();  // 객체 재활용을 위한 초기화
-                    view.endComment();  // 종료 멘트
-                    break;
-                }
-            } catch(IllegalArgumentException e) {
+            view.chooseComment();
+            String inputNumber = input.chooseNumber();
+            if (compareNumber.compare(computerNumber, inputNumber) == false) {
                 view.errorComment();
+                continue;
+            }
+            String result = compareNumber.compareResult();
+            view.resultComment(result);
+
+            if (compareNumber.getIsCorrect() == true) {
+                compareNumber.initBallAndStrike();  // 객체 재활용을 위한 초기화
+                view.endComment();  // 종료 멘트
+                break;
             }
         }
     }
